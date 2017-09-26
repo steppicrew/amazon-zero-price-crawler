@@ -1,0 +1,5 @@
+'use strict';
+
+module.exports= [
+    'https://www.amazon.de/Tablet-PCs/b/ref=nav_shopall_tablets?ie=UTF8&node=429874031',
+];
