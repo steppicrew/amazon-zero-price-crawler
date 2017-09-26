@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const productUrls= require('./startUrls');
 
-const outFileName= 'index.html';
+const outFileName= 'amazonResult.js';
 
 const limit= undefined;
 
@@ -14,22 +14,8 @@ const getProducts= url => new Promise((resolve, reject) => { AmazonProducts.getP
 
 // write products to index.html
 const outProds= allProds => {
-    let body= '';
-    for ( let asin in allProds ) {
-        let prod= allProds[asin];
-        body+= '<div class="prod"><a href="' + prod.url + '" target="_new"><img src="' + prod.image + '">' + prod.title + '</a></div>';
-    }
-
-    const html= '<html><head><meta charset="UTF-8"><style>'
-        + '.prod { width: 24%; float: left; padding: .5% }'
-        + 'img { height: 100px; vertical-align: middle; float: left;}'
-        + '</style></head><body>'
-        + body
-        + '</body></html>'
-    ;
-
     return new Promise((resolve, reject) => {
-        fs.writeFile(outFileName, html, err => err ? reject(err) : resolve(allProds));
+        fs.writeFile(outFileName, '\'use strict\';\nwindow.amazonResult= ' + JSON.stringify(allProds) + ';\n', err => err ? reject(err) : resolve(allProds));
     });
 };
 
@@ -58,6 +44,7 @@ promise
         return allProds;
     })
     .then(outProds)
-    .then(allProds => console.log('allProds', allProds))
-    .then(process.exit, process.exit);
+//    .then(allProds => console.log('allProds', allProds))
+    .then(() => console.log('SUCCESS'), err => console.log('ERROR', err))
+    .then(process.exit);
 

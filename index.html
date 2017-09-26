@@ -1,0 +1,35 @@
+<html>
+    <meta charset="utf-8"/>
+    <head>
+        <script src="jquery.js"></script>
+        <script src="amazonResult.js"></script>
+        <script src="main.js"></script>
+        <style>
+            .prod {
+                width: 24%;
+                float: left;
+                padding: .5%;
+            }
+            .prod a:visited {
+                color: lightgray;
+            }
+            .show-old .prod a:visited {
+                color: blue;
+            }
+            img {
+                height: 100px;
+                vertical-align: middle;
+                float: left;
+            }
+        </style>
+    </head>
+    <body class="show-new">
+        <div class="menu">
+            <a href="javascript:" class="all">show all</a>
+            <a href="javascript:" class="new">show new</a>
+            <a href="javascript:" class="old">show visited</a>
+        </div>
+        <div class="content">
+        </div>
+    </body>
+</html>
