@@ -17,7 +17,7 @@ const outProds= allProds => {
     let body= '';
     for ( let asin in allProds ) {
         let prod= allProds[asin];
-        body+= '<div class="prod"><a href="' + prod.url + '" taget="_new"><img src="' + prod.image + '">' + prod.title + '</a></div>';
+        body+= '<div class="prod"><a href="' + prod.url + '" target="_new"><img src="' + prod.image + '">' + prod.title + '</a></div>';
     }
 
     const html= '<html><head><meta charset="UTF-8"><stlye>'
