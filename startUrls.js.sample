@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports= [
-    'https://www.amazon.de/Tablet-PCs/b/ref=nav_shopall_tablets?ie=UTF8&node=429874031',
+    'https://www.amazon.de/s/ref=sr_nr_n_2?fst=as%3Aoff&rh=n%3A530484031%2Cn%3A%21530485031%2Cn%3A530886031%2Cn%3A567135031%2Cn%3A579956031%2Cn%3A579987031%2Cn%3A647101031&bbn=579987031&sort=price-asc-rank&ie=UTF8&qid=1506454810&rnid=579987031',
 ];

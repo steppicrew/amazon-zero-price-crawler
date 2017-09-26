@@ -13,30 +13,22 @@ const limit= undefined;
 const getProducts= url => new Promise((resolve, reject) => { AmazonProducts.getProducts({ url, limit }, (err, products) => err ? reject(err) : resolve(products)); });
 
 // write products to index.html
-const outProds= allProds => {
-    return new Promise((resolve, reject) => {
+const outProds= allProds => new Promise((resolve, reject) => {
         fs.writeFile(outFileName, '\'use strict\';\nwindow.amazonResult= ' + JSON.stringify(allProds) + ';\n', err => err ? reject(err) : resolve(allProds));
-    });
-};
+    })
+;
 
-const fetchFns= productUrls.map(
-    url =>
-        allProds =>
-            getProducts(url)
-                .then(prods => {
-                    prods
-                        .filter(prod => prod.price.match(/EUR 0,00$/))
-                        .forEach(prod => { allProds[prod.asin]= prod; });
-                    return allProds;
-                })
-);
-
-
-let promise= Promise.resolve({});
-
-fetchFns.forEach(fn => { promise= promise.then(fn); });
-
-promise
+Promise.all(productUrls.map(
+    url => getProducts(url)
+        .then(prods => Object.assign(
+                {},
+                ...prods
+                    .filter(prod => prod.price.match(/EUR 0,00$/))
+                    .map(prod => ({ [prod.asin]: prod }))
+            )
+        )
+))
+    .then(prodLists => Object.assign({}, ...prodLists))
     .then(allProds => {
         for ( let asin in allProds ) {
             allProds[asin].url= 'https://www.amazon.de/exec/obidos/ASIN/' + asin;
@@ -46,5 +38,6 @@ promise
     .then(outProds)
 //    .then(allProds => console.log('allProds', allProds))
     .then(() => console.log('SUCCESS'), err => console.log('ERROR', err))
-    .then(process.exit);
+    .then(process.exit)
+;
 
