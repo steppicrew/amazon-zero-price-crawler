@@ -20,8 +20,8 @@ const outProds= allProds => {
         body+= '<div class="prod"><a href="' + prod.url + '" target="_new"><img src="' + prod.image + '">' + prod.title + '</a></div>';
     }
 
-    const html= '<html><head><meta charset="UTF-8"><stlye>'
-        + '.prod { widht: 24%; float: left; padding: .5% }'
+    const html= '<html><head><meta charset="UTF-8"><style>'
+        + '.prod { width: 24%; float: left; padding: .5% }'
         + 'img { height: 100px; vertical-align: middle; float: left;}'
         + '</style></head><body>'
         + body
