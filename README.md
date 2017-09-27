@@ -4,7 +4,7 @@ I wrote it to find free e-books. And since Amazon's "Order by price ascending" i
 
     npm install
 
-modify ```startUrls.js```
+copy ```startUrls.js.sample``` to ```startUrls.js``` and modify it.
 
     node index.js
 
