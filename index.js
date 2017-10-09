@@ -21,13 +21,15 @@ const options= {
 const rePrice= /EUR 0,00$/;
 
 // fetch products (https://www.npmjs.com/package/crawl-amazon-products)
-const getProducts= url => new Promise((resolve, reject) => { AmazonProducts.getProducts({ ...options, url }, (err, products) => err ? reject(err) : resolve(products)); });
+const getProducts= url => new Promise((resolve, reject) => { console.log('Fetching ' + url + '...'); AmazonProducts.getProducts({ ...options, url }, (err, products) => err ? reject(err) : resolve(products)); });
 
 // write products to index.html
 const outProds= allProds => new Promise((resolve, reject) => {
         fs.writeFile(outFileName, '\'use strict\';\nwindow.amazonResult= ' + JSON.stringify(allProds) + ';\n', err => err ? reject(err) : resolve(allProds));
     })
 ;
+
+const promiseLog= ...message => res => { console.log(...message); return res; };
 
 Promise.all(productUrls.map(
     url => getProducts(url)
@@ -38,6 +40,7 @@ Promise.all(productUrls.map(
                     .map(prod => ({ [prod.asin]: prod }))
             )
         )
+        .then(promiseLog('... done fetching', url))
 //        .then(prods => console.log(prods) || prods)
 ))
     .then(prodLists => Object.assign({}, ...prodLists))
