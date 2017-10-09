@@ -14,7 +14,7 @@ const options= {
         'Accept-Language': 'en-US,en;q=0.8',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0',
+        'User-Agent': 'Mozilla/5.0 (X11a; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0',
     },
 };
 
@@ -27,13 +27,15 @@ const mergeObjects= function( objs ) {
 const rePrice= /EUR 0,00$/;
 
 // fetch products (https://www.npmjs.com/package/crawl-amazon-products)
-const getProducts= url => new Promise((resolve, reject) => { AmazonProducts.getProducts(mergeObjects(options, { url: url }), (err, products) => err ? reject(err) : resolve(products)); });
+const getProducts= url => new Promise((resolve, reject) => { console.log('Fetching ' + url + '...'); AmazonProducts.getProducts(mergeObjects([ options, { url: url } ]), (err, products) => err ? reject(err) : resolve(products)); });
 
 // write products to index.html
 const outProds= allProds => new Promise((resolve, reject) => {
         fs.writeFile(outFileName, '\'use strict\';\nwindow.amazonResult= ' + JSON.stringify(allProds) + ';\n', err => err ? reject(err) : resolve(allProds));
     })
 ;
+
+const promiseLog= message => res => { console.log(message); return res; };
 
 Promise.all(productUrls.map(
     url => getProducts(url)
@@ -43,6 +45,7 @@ Promise.all(productUrls.map(
                     .map(prod => ({ [prod.asin]: prod }))
             )
         )
+        .then(promiseLog('... done fetching ' + url))
 //        .then(prods => console.log(prods) || prods)
 ))
     .then(prodLists => mergeObjects(prodLists))
