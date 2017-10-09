@@ -18,10 +18,16 @@ const options= {
     },
 };
 
+const mergeObjects= function( objs ) {
+    let result= {};
+    objs.forEach(obj => Object.assign(result, obj));
+    return result;
+};
+
 const rePrice= /EUR 0,00$/;
 
 // fetch products (https://www.npmjs.com/package/crawl-amazon-products)
-const getProducts= url => new Promise((resolve, reject) => { AmazonProducts.getProducts({ ...options, url }, (err, products) => err ? reject(err) : resolve(products)); });
+const getProducts= url => new Promise((resolve, reject) => { AmazonProducts.getProducts(mergeObjects(options, { url: url }), (err, products) => err ? reject(err) : resolve(products)); });
 
 // write products to index.html
 const outProds= allProds => new Promise((resolve, reject) => {
@@ -31,16 +37,15 @@ const outProds= allProds => new Promise((resolve, reject) => {
 
 Promise.all(productUrls.map(
     url => getProducts(url)
-        .then(prods => Object.assign(
-                {},
-                ...prods
+        .then(prods => mergeObjects(
+                prods
                     .filter(prod => prod.price.match(rePrice))
                     .map(prod => ({ [prod.asin]: prod }))
             )
         )
 //        .then(prods => console.log(prods) || prods)
 ))
-    .then(prodLists => Object.assign({}, ...prodLists))
+    .then(prodLists => mergeObjects(prodLists))
     .then(allProds => {
         for ( let asin in allProds ) {
             allProds[asin].url= 'https://www.amazon.de/exec/obidos/ASIN/' + asin;
