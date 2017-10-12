@@ -7,7 +7,9 @@ jQuery(function( $ ) {
 
     var amazonResult= window.amazonResult;
 
-    var updateAsin= function( seenAsins ) {
+    var undoHistory= [];
+
+    var updateSeen= function( seenAsins ) {
         $('.prod', $content).removeClass('seen');
         seenAsins.forEach(function( asin ) {
             if ( asin in amazonResult ) $('.prod[asin="' + asin + '"]', $content).addClass('seen');
@@ -18,10 +20,17 @@ jQuery(function( $ ) {
         var url= 'seenList.php';
         if ( asin ) {
             url+= '?' + (del ? 'del' : 'add') + '=' + asin;
+
+            // filter asin from undoHistory
+            undoHistory= undoHistory.filter(function( a ) { return a != asin; });
+
+            // add asin for undo on add
+            if ( asin && !del ) undoHistory.push(asin);
         }
+
         $.getJSON(url, function( result ) {
             if ( $.isArray(result) ) {
-                updateAsin(result);
+                updateSeen(result);
             }
             updateImages();
             updateCounter();
@@ -34,6 +43,7 @@ jQuery(function( $ ) {
         $('.counter.all').html(sum);
         $('.counter.seen').html(seen);
         $('.counter.unseen').html(sum -seen);
+        $('button.undo').prop('disabled', !undoHistory.length);
     };
 
     var updateImages= function() {
@@ -62,6 +72,9 @@ jQuery(function( $ ) {
         .on('click', 'button.old', function() {
             $body.removeClass('show-new').addClass('show-old');
             updateImages();
+        })
+        .on('click', 'button.undo', function() {
+            update(undoHistory.pop(), true);
         })
         .on('click', '.prod a', function( ev ) {
             var $this= $(this);
