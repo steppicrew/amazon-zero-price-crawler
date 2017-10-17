@@ -85,20 +85,32 @@ jQuery(function( $ ) {
         })
     ;
 
-    for ( var asin in amazonResult ) {
-        var prod= amazonResult[asin];
-        var $div= $('<div class="prod"/>');
-        $div.attr('asin', asin).attr('title', prod.title).addClass('seen');
-        var $a= $('<a href="' + prod.url + '" target="_blank"/>');
-        $div.append($a);
-        var $img= $('<img/>');
-        $img.data('src', prod.image);
-        $a.append($img);
-        $a.append(prod.title);
+    var init= function( _amazonResult ) {
+        $content.empty();
+        amazonResult= _amazonResult;
+        for ( var asin in _amazonResult ) {
+            var prod= _amazonResult[asin];
+            var $div= $('<div class="prod"/>');
+            $div.attr('asin', asin).attr('title', prod.title).addClass('seen');
+            var $a= $('<a href="' + prod.url + '" target="_blank"/>');
+            $div.append($a);
+            var $img= $('<img/>');
+            $img.data('src', prod.image);
+            $a.append($img);
+            $a.append(prod.title);
 
-        $content.append($div)
-    }
+            $content.append($div)
+        }
 
-    updateImages();
-    update();
+        updateImages();
+        update();
+    };
+
+    $content.html('<h1>Loading results...</h1>');
+    $.getJSON('amazonResult.json', function( result ) {
+        if ( result ) {
+            return init(result);
+        }
+        $content.html('<h1>Loadin result failed</h1>');
+    });
 });

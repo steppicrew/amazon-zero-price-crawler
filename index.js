@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const productUrls= require('./startUrls');
 
-const outFileName= 'amazonResult.js';
+const outFileName= 'amazonResult.json';
 
 const options= () => ({
     limit: undefined,
@@ -31,7 +31,7 @@ const getProducts= url => new Promise((resolve, reject) => { console.log('Fetchi
 
 // write products to index.html
 const outProds= allProds => new Promise((resolve, reject) => {
-        fs.writeFile(outFileName, '\'use strict\';\nwindow.amazonResult= ' + JSON.stringify(allProds) + ';\n', err => err ? reject(err) : resolve(allProds));
+        fs.writeFile(outFileName, JSON.stringify(allProds), err => err ? reject(err) : resolve(allProds));
     })
 ;
 
@@ -50,6 +50,8 @@ const runAll= runAllSeriell;
 
 runAll(productUrls.map(
     url => () => getProducts(url)
+        .catch(() => getProducts(url))
+        .catch(() => getProducts(url)) // try up to three times
         .then(prods => mergeObjects(
                 prods
                     .filter(prod => prod.price.match(rePrice))
@@ -57,12 +59,13 @@ runAll(productUrls.map(
             )
         )
         .then(promiseLog('... done fetching ' + url))
+        .catch(err => { console.log('... FAILED fetching ' + url, err); return {}; })
 //        .then(prods => console.log(prods) || prods)
 ))
     .then(prodLists => mergeObjects(prodLists))
     .then(allProds => {
         for ( let asin in allProds ) {
-            allProds[asin].url= 'https://www.amazon.de/exec/obidos/ASIN/' + asin;
+            allProds[asin].url= 'https://smile.amazon.de/exec/obidos/ASIN/' + asin;
         }
         return allProds;
     })
